@@ -1,1 +1,1 @@
-export const presets = [['@babel/preset-env', { targets: { node: 'current' } }]];
+export default [['@babel/preset-env', { targets: { node: 'current' } }]];
