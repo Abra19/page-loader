@@ -2,14 +2,11 @@ import * as fsp from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import nock from 'nock';
-import { fileURLToPath } from 'url';
 import pageLoader from '../src/index.js';
 
 nock.disableNetConnect();
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fixDirname = '__fixtures__';
-const getFixturePath = (file) => path.join(__dirname, '..', fixDirname, file);
 const filename = 'ru-hexlet-io-courses.html';
 const baseUrl = 'https://ru.hexlet.io';
 const pagePath = '/courses';
@@ -23,7 +20,8 @@ beforeEach(async () => {
 
 describe('Loading File - positive', () => {
   test('correctly loading contain', async () => {
-    const filepath = getFixturePath(filename);
+    const filepath = path.join(fixDirname, filename);
+    console.log(filepath)
     const fileContent = await fsp.readFile(filepath, 'utf-8');
     nock(baseUrl)
       .get(pagePath)
