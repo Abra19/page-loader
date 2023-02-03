@@ -10,6 +10,10 @@
     "test": "npx jest"
   },
   "type": "module",
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {}
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Abra19/frontend-testing-react-project-67.git"

@@ -12,8 +12,8 @@ program
   .arguments('<url>')
   .action((url, option) => {
     pageLoader(url, option.output)
-      .then(() => {
-        console.log(`Page '${url}' loaded`);
+      .then(({ filepath }) => {
+        console.log(filepath);
       })
       .catch((err) => {
         console.error(err.toString());
@@ -21,3 +21,5 @@ program
       });
   });
 program.parse(process.argv);
+
+// npx babel-node bin/page-loader -o ./__fixtures__ https://ru.hexlet.io/courses
