@@ -20,7 +20,7 @@ beforeEach(async () => {
 
 describe('Loading File - positive', () => {
   test('correctly loading contain', async () => {
-    const filepath = path.resolve(process.cwd(), fixDirname, filename);
+    const filepath = path.resolve(fixDirname, filename);
     const fileContent = await fsp.readFile(filepath, 'utf-8');
     nock(baseUrl)
       .get(pagePath)
