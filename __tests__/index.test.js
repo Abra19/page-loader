@@ -6,7 +6,7 @@ import pageLoader from '../src/index.js';
 
 nock.disableNetConnect();
 
-const fixDirname = '__fixtures__';
+const fixDirname = './__fixtures__';
 const filename = 'ru-hexlet-io-courses.html';
 const baseUrl = 'https://ru.hexlet.io';
 const pagePath = '/courses';
