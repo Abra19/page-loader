@@ -5,10 +5,7 @@ import nock from 'nock';
 import { fileURLToPath } from 'url';
 import pageLoader from '../src/index.js';
 
-nock.disableNetConnect();
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-console.log(fileURLToPath(import.meta.url));
 const fixDirname = '__fixtures__';
 const filename = 'ru-hexlet-io-courses.html';
 const baseUrl = 'https://ru.hexlet.io';
@@ -17,6 +14,7 @@ const pageUrl = `${baseUrl}${pagePath}`;
 
 let tmpDirPath = '';
 
+nock.disableNetConnect();
 beforeEach(async () => {
   tmpDirPath = await fsp.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
 });
@@ -24,7 +22,8 @@ beforeEach(async () => {
 describe('Loading File - positive', () => {
   test('correctly loading contain', async () => {
     console.log(__dirname);
-    const filepath = path.join(__dirname, '..', fixDirname, filename);
+    // const filepath = path.join(__dirname, '..', fixDirname, filename);
+    const filepath = path.resolve(__dirname, '..', fixDirname, filename);
     const fileContent = await fsp.readFile(filepath, 'utf-8');
     nock(baseUrl)
       .get(pagePath)
