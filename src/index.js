@@ -3,6 +3,7 @@ import path from 'path';
 import axios from 'axios';
 /* eslint-disable-next-line */
 import * as cheerio from 'cheerio';
+import Listr from 'listr';
 
 import { makeName, makeFileName } from './utils.js';
 
@@ -34,6 +35,20 @@ const makeLinks = (data, url, dir) => {
   return { html: $.html(), localLinks };
 };
 
+const handleLinks = (links, filesDirPath) => {
+  const tasks = links.map((link) => {
+    const url = link.fileUrl.toString();
+    const filePath = path.join(filesDirPath, link.fileName);
+    return {
+      title: `Downloading - ${url}`,
+      task: () => axios.get(url, { responseType: 'arraybuffer' })
+        .then(({ data }) => fsp.writeFile(filePath, data)),
+    };
+  });
+
+  return new Listr(tasks, { concurrent: true });
+};
+
 const pageLoader = (req, outputDir = process.cwd()) => {
   const reqUrl = new URL(req);
   const htmlFileName = makeName(reqUrl, 'html');
@@ -52,11 +67,8 @@ const pageLoader = (req, outputDir = process.cwd()) => {
     })
     .then(() => fsp.mkdir(filesDirPath))
     .then(() => {
-      const link = neededLinks[0];
-      const url = link.fileUrl.toString();
-      const filePath = path.join(filesDirPath, link.fileName);
-      return axios.get(url, { responseType: 'arraybuffer' })
-        .then(({ data }) => fsp.writeFile(filePath, data));
+      const tasks = handleLinks(neededLinks, filesDirPath);
+      return tasks.run();
     })
     .then(() => ({ htmlFilePath }));
 };
