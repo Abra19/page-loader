@@ -2,42 +2,59 @@ import * as fsp from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import nock from 'nock';
-import { fileURLToPath } from 'url';
-import pageLoader from '../src/index.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import pageLoader from '../src/index.js';
+import { readFile, makeFileName } from '../src/utils.js';
+
+nock.disableNetConnect();
+
 const fixDirname = '__fixtures__';
-const filename = 'ru-hexlet-io-courses.html';
+
 const baseUrl = 'https://ru.hexlet.io';
 const pagePath = '/courses';
 const pageUrl = `${baseUrl}${pagePath}`;
 
+const imgPathReq = '/assets/professions/nodejs.png';
+
+const pageName = 'ru-hexlet-io-courses';
+const ext = '.html';
+
+const filesDir = `${pageName}_files`;
+const imgName = 'ru-hexlet-io-assets-professions-nodejs.png';
+
 let tmpDirPath = '';
 
-nock.disableNetConnect();
-beforeEach(async () => {
-  tmpDirPath = await fsp.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
-});
+describe('Loading File - Successful', () => {
+  beforeEach(async () => {
+    tmpDirPath = await fsp.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+  });
+  test('correctly loading in fixed output', async () => {
+    const testPage = await readFile(fixDirname, `${pageName}${ext}`, 'utf8');
+    const image = await readFile(fixDirname, `${filesDir}/${imgName}`);
 
-describe('Loading File - positive', () => {
-  test('correctly loading contain', async () => {
-    console.log(__dirname);
-    // const filepath = path.join(__dirname, '..', fixDirname, filename);
-    const filepath = path.resolve(__dirname, '..', fixDirname, filename);
-    const fileContent = await fsp.readFile(filepath, 'utf-8');
+    const htmlName = makeFileName(new URL(`${baseUrl}${pagePath}`));
+    const pngName = makeFileName(new URL(`${baseUrl}${imgPathReq}`));
+    expect(htmlName).toBe(`${pageName}${ext}`);
+    expect(pngName).toBe(imgName);
+
     nock(baseUrl)
       .get(pagePath)
-      .reply(200, fileContent);
-    const tmpPathName = path.join(tmpDirPath, filename);
+      .reply(200, testPage)
+      .get(imgPathReq)
+      .reply(200, image);
 
     await pageLoader(pageUrl, tmpDirPath);
-    const existContent = await fsp.readFile(tmpPathName, 'utf-8');
 
-    expect(fileContent).toBe(existContent);
+    const expectedPage = await readFile(fixDirname, 'expected.html', 'utf8');
+    const actualPage = await readFile(tmpDirPath, `${pageName}${ext}`, 'utf8');
+    const downloadedImage = await readFile(tmpDirPath, `${filesDir}/${imgName}`);
+
+    expect(actualPage).toEqual(expectedPage);
+    expect(downloadedImage).toEqual(image);
   });
 });
 
-describe('Loading File - negative', () => {
+describe('Loading File - Negative', () => {
   test('bad request', async () => {
     nock('http://my.url')
       .get('/not-exist-page')
