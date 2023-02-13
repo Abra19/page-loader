@@ -9,6 +9,8 @@ import { makeName, makeFileName } from './utils.js';
 
 const tags = {
   img: 'src',
+  link: 'href',
+  script: 'src',
 };
 
 const makeLinks = (data, url, dir) => {
