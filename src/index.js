@@ -1,6 +1,8 @@
 import * as fsp from 'fs/promises';
 import path from 'path';
 import axios from 'axios';
+import debug from 'debug';
+
 /* eslint-disable-next-line */
 import * as cheerio from 'cheerio';
 import Listr from 'listr';
@@ -12,6 +14,10 @@ const tags = {
   link: 'href',
   script: 'src',
 };
+
+// DEBUG=page-loader page-loader --output tmp https://hexlet.io/courses
+
+const log = debug('page-loader');
 
 const makeLinks = (data, url, dir) => {
   const $ = cheerio.load(data);
@@ -62,13 +68,20 @@ const pageLoader = (req, outputDir = process.cwd()) => {
   let neededLinks = null;
 
   return axios.get(req)
-    .then(({ data }) => {
-      const { html, localLinks } = makeLinks(data, reqUrl, filesDirName);
+    .then((res) => {
+      log('GET request -', reqUrl);
+      log('Response answer code -', res.status);
+      const { html, localLinks } = makeLinks(res.data, reqUrl, filesDirName);
       neededLinks = localLinks;
+      log('Writing HTML file into -', htmlFilePath);
       return fsp.writeFile(htmlFilePath, html);
     })
-    .then(() => fsp.mkdir(filesDirPath))
     .then(() => {
+      log('Make directory for assets -', filesDirPath);
+      return fsp.mkdir(filesDirPath);
+    })
+    .then(() => {
+      log('Downloading assets into -', filesDirPath);
       const tasks = handleLinks(neededLinks, filesDirPath);
       return tasks.run();
     })
