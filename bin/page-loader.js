@@ -22,4 +22,4 @@ program
   });
 program.parse(process.argv);
 
-// npx babel-node bin/page-loader -o ./__fixtures__ url
+// npx babel-node bin/page-loader -o ./__fixtures__ https://ru.hexlet.io/courses

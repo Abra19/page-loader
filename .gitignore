@@ -4,4 +4,3 @@ coverage/
 .DS_Store
 /.vscode/
 /tmp/
-/__fixtures__/ru-hexlet-io-courses_files/*

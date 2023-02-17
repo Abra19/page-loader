@@ -2,7 +2,10 @@ install:
 	npm ci
 
 page-loader:
-	node bin/page-loader.js
+	npx babel-node bin/page-loader -o ./__fixtures__ https://ru.hexlet.io/courses
+
+debug:
+	DEBUG=page-loader page-loader --output tmp https://hexlet.io/courses
 
 test:
 	npm test
