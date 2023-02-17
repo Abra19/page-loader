@@ -12,7 +12,8 @@
   "type": "module",
   "jest": {
     "testEnvironment": "node",
-    "transform": {}
+    "transform": {},
+    "verbose": true
   },
   "repository": {
     "type": "git",
