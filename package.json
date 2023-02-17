@@ -12,10 +12,7 @@
   "type": "module",
   "jest": {
     "testEnvironment": "node",
-    "transform": {
-      "\\.[jt]sx?$": "babel-jest",
-      "\\.css$": "some-css-transformer"
-    },
+    "transform": {},
     "verbose": true
   },
   "repository": {
